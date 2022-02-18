@@ -35,20 +35,31 @@ def avoid_my_neck(my_head: Dict[str, int], my_body: List[dict], possible_moves: 
 
 
 
-def avoid_the_wall(my_head, the_board_height, the_board_width, possible_moves: List[str]) -> List[str]:
-    print(f"my_head: {my_head}, possible_moves: {possible_moves}")
-    
+def avoid_the_wall(my_head, the_board_height, the_board_width, possible_moves: List[str]) -> List[str]:    
     if my_head["x"] == 0 and "left" in possible_moves:
         possible_moves.remove("left")
-
     if my_head["y"] == 0 and "down" in possible_moves:
         possible_moves.remove("down")
-
     if my_head["x"] == the_board_width-1 and "right" in possible_moves:
         possible_moves.remove("right")
-
     if my_head["y"] == the_board_height-1 and "up" in possible_moves:
         possible_moves.remove("up")
+
+    return possible_moves
+
+
+def avoid_myself(my_head: Dict[str, int], my_body: List[dict], possible_moves: List[str]) -> List[str]:
+    # 2 as head cannot and neck is already tested
+    for i in range(2, len(my_body)):
+        body_part = my_body[i]
+        if body_part["x"] < my_head["x"] and "left" in possible_moves:
+            possible_moves.remove("left")
+        elif body_part["x"] > my_head["x"] and "right" in possible_moves:
+            possible_moves.remove("right")
+        elif body_part["y"] < my_head["y"] and "down" in possible_moves:
+            possible_moves.remove("down")
+        elif body_part["y"] > my_head["y"] and "up" in possible_moves:
+            possible_moves.remove("up")
 
     return possible_moves
     
@@ -85,6 +96,7 @@ def choose_move(data: dict) -> str:
     possible_moves = avoid_the_wall(my_head, the_board_height, the_board_width, possible_moves)
 
     # TODO Using information from 'data', don't let your Battlesnake pick a move that would hit its own body
+    possible_moves = avoid_myself(my_head, my_body, possible_moves)
 
     # TODO: Using information from 'data', don't let your Battlesnake pick a move that would collide with another Battlesnake
 
