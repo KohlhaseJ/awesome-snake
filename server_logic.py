@@ -36,12 +36,17 @@ def avoid_my_neck(my_head: Dict[str, int], my_body: List[dict], possible_moves: 
 
 
 def avoid_the_wall(my_head, the_board_height, the_board_width, possible_moves: List[str]) -> List[str]:
+    print(f"my_head: {my_head}, possible_moves: {possible_moves}")
+    
     if my_head["x"] == 0 and "left" in possible_moves:
         possible_moves.remove("left")
+
     if my_head["y"] == 0 and "bottom" in possible_moves:
         possible_moves.remove("bottom")
+
     if my_head["x"] == the_board_width-1 and "right" in possible_moves:
         possible_moves.remove("right")
+        
     if my_head["y"] == the_board_height-1 and "top" in possible_moves:
         possible_moves.remove("top")
 
