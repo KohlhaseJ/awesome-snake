@@ -23,43 +23,45 @@ def avoid_my_neck(my_head: Dict[str, int], my_body: List[dict], possible_moves: 
     my_neck = my_body[1]  # The segment of body right after the head is the 'neck'
 
     if my_neck["x"] < my_head["x"]:  # my neck is left of my head
-        possible_moves.remove("left")
+        try_remove_move("left", possible_moves)
     elif my_neck["x"] > my_head["x"]:  # my neck is right of my head
-        possible_moves.remove("right")
+        try_remove_move("right", possible_moves)
     elif my_neck["y"] < my_head["y"]:  # my neck is below my head
-        possible_moves.remove("down")
+        try_remove_move("down", possible_moves)
     elif my_neck["y"] > my_head["y"]:  # my neck is above my head
-        possible_moves.remove("up")
+        try_remove_move("up", possible_moves)
 
     return possible_moves
 
 
 
 def avoid_the_wall(my_head, the_board_height, the_board_width, possible_moves: List[str]) -> List[str]:    
-    if my_head["x"] == 0 and "left" in possible_moves:
-        possible_moves.remove("left")
-    if my_head["y"] == 0 and "down" in possible_moves:
-        possible_moves.remove("down")
-    if my_head["x"] == the_board_width-1 and "right" in possible_moves:
-        possible_moves.remove("right")
-    if my_head["y"] == the_board_height-1 and "up" in possible_moves:
-        possible_moves.remove("up")
+    if my_head["x"] == 0:
+        try_remove_move("left", possible_moves)
+    if my_head["y"] == 0:
+        try_remove_move("down", possible_moves)
+    if my_head["x"] == the_board_width-1:
+        try_remove_move("right", possible_moves)
+    if my_head["y"] == the_board_height-1:
+        try_remove_move("up", possible_moves)
 
     return possible_moves
 
 
 def avoid_myself(my_head: Dict[str, int], my_body: List[dict], possible_moves: List[str]) -> List[str]:
-    # 2 as head cannot and neck is already tested
-    for i in range(2, len(my_body)):
+    # 2 as head cannot and neck is already tested and len()-1 because the tail will move you can just follow
+    for i in range(2, len(my_body)-1):
         body_part = my_body[i]
-        if body_part["x"] < my_head["x"] and "left" in possible_moves:
-            possible_moves.remove("left")
-        elif body_part["x"] > my_head["x"] and "right" in possible_moves:
-            possible_moves.remove("right")
-        elif body_part["y"] < my_head["y"] and "down" in possible_moves:
-            possible_moves.remove("down")
-        elif body_part["y"] > my_head["y"] and "up" in possible_moves:
-            possible_moves.remove("up")
+        if body_part["x"] < my_head["x"]:
+            try_remove_move("left", possible_moves)
+        elif body_part["x"] > my_head["x"]:
+            try_remove_move("right", possible_moves)
+        elif body_part["y"] < my_head["y"]:
+            try_remove_move("down", possible_moves)
+        elif body_part["y"] > my_head["y"]:
+            try_remove_move("up", possible_moves)
+    
+    print(f"possible_moves {possible_moves}")
 
     return possible_moves
     
@@ -109,3 +111,7 @@ def choose_move(data: dict) -> str:
     print(f"{data['game']['id']} MOVE {data['turn']}: {move} picked from all valid options in {possible_moves}")
 
     return move
+
+def try_remove_move(move, possible_moves):
+    if move in possible_moves:
+        possible_moves.remove(move)
