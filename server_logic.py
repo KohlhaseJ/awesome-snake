@@ -34,6 +34,20 @@ def avoid_my_neck(my_head: Dict[str, int], my_body: List[dict], possible_moves: 
     return possible_moves
 
 
+
+def avoid_the_wall(the_board, my_head: Dict[str, int], possible_moves: List[str]) -> List[str]:
+    if my_head["x"] == 0:
+        possible_moves.remove("left")
+    if my_head["y"] == 0:
+        possible_moves.remove("top")
+    if my_head["x"] == the_board["width"]-1:
+        possible_moves.remove("right")
+    if my_head["y"] == the_board["height"]-1:
+        possible_moves.remove("bottom")
+
+    return possible_moves
+    
+
 def choose_move(data: dict) -> str:
     """
     data: Dictionary of all Game Board data as received from the Battlesnake Engine.
@@ -48,6 +62,7 @@ def choose_move(data: dict) -> str:
     """
     my_head = data["you"]["head"]  # A dictionary of x/y coordinates like {"x": 0, "y": 0}
     my_body = data["you"]["body"]  # A list of x/y coordinate dictionaries like [ {"x": 0, "y": 0}, {"x": 1, "y": 0}, {"x": 2, "y": 0} ]
+    the_board = data["board"]
 
     # TODO: uncomment the lines below so you can see what this data looks like in your output!
     # print(f"~~~ Turn: {data['turn']}  Game Mode: {data['game']['ruleset']['name']} ~~~")
@@ -59,6 +74,7 @@ def choose_move(data: dict) -> str:
 
     # Don't allow your Battlesnake to move back in on it's own neck
     possible_moves = avoid_my_neck(my_head, my_body, possible_moves)
+    possible_moves = avoid_the_wall(the_board, my_head, possible_moves)
 
     # TODO: Using information from 'data', find the edges of the board and don't let your Battlesnake move beyond them
     # board_height = ?
