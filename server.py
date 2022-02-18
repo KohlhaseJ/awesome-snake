@@ -53,8 +53,15 @@ def handle_move():
 
     # TODO - look at the server_logic.py file to see how we decide what move to return!
     move = server_logic.choose_move(data)
+    shout = ""
 
-    return {"move": move}
+    if data["turn"] == 1:
+        shout = "Here we go again!"
+    
+    if move == "":
+        shout = "Oh f**k!!!"
+
+    return {"move": move, "shout": shout}
 
 
 @app.post("/end")
