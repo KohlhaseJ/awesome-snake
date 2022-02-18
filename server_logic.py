@@ -41,14 +41,14 @@ def avoid_the_wall(my_head, the_board_height, the_board_width, possible_moves: L
     if my_head["x"] == 0 and "left" in possible_moves:
         possible_moves.remove("left")
 
-    if my_head["y"] == 0 and "bottom" in possible_moves:
-        possible_moves.remove("bottom")
+    if my_head["y"] == 0 and "down" in possible_moves:
+        possible_moves.remove("down")
 
     if my_head["x"] == the_board_width-1 and "right" in possible_moves:
         possible_moves.remove("right")
-        
-    if my_head["y"] == the_board_height-1 and "top" in possible_moves:
-        possible_moves.remove("top")
+
+    if my_head["y"] == the_board_height-1 and "up" in possible_moves:
+        possible_moves.remove("up")
 
     return possible_moves
     
