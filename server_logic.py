@@ -79,7 +79,7 @@ def choose_move(data: dict) -> str:
 
     # TODO: uncomment the lines below so you can see what this data looks like in your output!
     # print(f"~~~ Turn: {data['turn']}  Game Mode: {data['game']['ruleset']['name']} ~~~")
-    print(f"All board data this turn: {data}")
+    # print(f"All board data this turn: {data}")
     # print(f"My Battlesnakes head this turn is: {my_head}")
     # print(f"My Battlesnakes body this turn is: {my_body}")
 
@@ -106,7 +106,9 @@ def choose_move(data: dict) -> str:
     # TODO: Using information from 'data', don't let your Battlesnake pick a move that would collide with another Battlesnake
     for snake in data["board"]["snakes"]:
         snake_body = snake["body"]
+        print(snake)
         possible_moves = avoid_snake(my_head, snake_body, possible_moves)
+        print(possible_moves)
 
     print(possible_moves)
 
