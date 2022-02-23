@@ -42,6 +42,8 @@ def point_distance(point1, point2):
 
 
 def find_food_moves(my_head, foods, possible_moves):
+    if len(possible_moves) < 1:
+        return possible_moves
     if len(foods) == 0:
         return possible_moves
 
@@ -69,6 +71,29 @@ def find_food_moves(my_head, foods, possible_moves):
         return list(move_intersection)
     return possible_moves
     
+def go_centric(my_head, the_board_height, the_board_width, possible_moves):
+    if(len(possible_moves) < 1):
+        return possible_moves
+    
+    cy = (int)(the_board_height/2)
+    cx = (int)(the_board_width/2)
+
+    good_moves = []
+
+    if my_head["x"] > cx:
+        good_moves.append("left")
+    elif my_head["x"] < cx:
+        good_moves.append("right")
+    if my_head["y"] > cy:
+        good_moves.append("down")
+    elif my_head["y"] < cy:
+        good_moves.append("up")
+
+    move_intersection = set(possible_moves).intersection(set(good_moves))
+    if len(move_intersection) > 0:
+        return list(move_intersection)
+    return possible_moves
+
 
 def choose_move(data: dict) -> str:
     """
@@ -109,6 +134,9 @@ def choose_move(data: dict) -> str:
 
     # try to move towards food
     possible_moves = find_food_moves(my_head, data["board"]["food"], possible_moves)
+
+    # if have a choice go centric
+    possible_moves = go_centric(my_head, the_board_height, the_board_width, possible_moves)
 
     # Choose a random direction from the remaining possible_moves to move in, and then return that move
     move = random.choice(possible_moves)
