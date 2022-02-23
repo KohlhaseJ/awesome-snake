@@ -101,6 +101,8 @@ def choose_move(data: dict) -> str:
         snake_body = snake["body"]
         possible_moves = avoid_snake(my_head, snake_body, possible_moves)
 
+    print(possible_moves)
+
     # TODO: Using information from 'data', make your Battlesnake move towards a piece of food on the board
 
     # Choose a random direction from the remaining possible_moves to move in, and then return that move
