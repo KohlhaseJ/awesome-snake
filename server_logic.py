@@ -50,14 +50,19 @@ def avoid_the_wall(my_head, the_board_height, the_board_width, possible_moves: L
 def avoid_snake(my_head: Dict[str, int], snake_body: List[dict], possible_moves: List[str]) -> List[str]:
     for i in range(0, len(snake_body)):
         body_part = snake_body[i]
-        if body_part["x"] < my_head["x"]:
-            try_remove_move("left", possible_moves)
-        elif body_part["x"] > my_head["x"]:
-            try_remove_move("right", possible_moves)
-        elif body_part["y"] < my_head["y"]:
-            try_remove_move("down", possible_moves)
-        elif body_part["y"] > my_head["y"]:
-            try_remove_move("up", possible_moves)
+        if body_part["y"] == my_head["y"]:
+            difference = body_part["x"] - my_head["x"]
+            if difference == 1:
+                try_remove_move("right", possible_moves)
+            elif difference == -1:
+                try_remove_move("left", possible_moves)
+        
+        if body_part["x"] == my_head["x"]:
+            difference = body_part["y"] - my_head["y"]
+            if difference == 1:
+                try_remove_move("up", possible_moves)
+            elif difference == -1:
+                try_remove_move("down", possible_moves)
 
     return possible_moves
     
