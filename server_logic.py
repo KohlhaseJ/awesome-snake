@@ -79,22 +79,29 @@ def choose_move(data: dict) -> str:
 
     # TODO: uncomment the lines below so you can see what this data looks like in your output!
     # print(f"~~~ Turn: {data['turn']}  Game Mode: {data['game']['ruleset']['name']} ~~~")
-    # print(f"All board data this turn: {data}")
+    print(f"All board data this turn: {data}")
     # print(f"My Battlesnakes head this turn is: {my_head}")
     # print(f"My Battlesnakes body this turn is: {my_body}")
 
     possible_moves = ["up", "down", "left", "right"]
+    print(possible_moves)
 
     # Don't allow your Battlesnake to move back in on it's own neck
     possible_moves = avoid_my_neck(my_head, my_body, possible_moves)
+    print(possible_moves)
+
 
     # TODO: Using information from 'data', find the edges of the board and don't let your Battlesnake move beyond them
     the_board_height = data["board"]["height"]
     the_board_width = data["board"]["width"]
     possible_moves = avoid_the_wall(my_head, the_board_height, the_board_width, possible_moves)
+    print(possible_moves)
+
 
     # TODO Using information from 'data', don't let your Battlesnake pick a move that would hit its own body
     possible_moves = avoid_snake(my_head, my_body[2:], possible_moves)
+    print(possible_moves)
+
 
     # TODO: Using information from 'data', don't let your Battlesnake pick a move that would collide with another Battlesnake
     for snake in data["board"]["snakes"]:
