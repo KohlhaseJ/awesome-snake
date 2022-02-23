@@ -55,9 +55,9 @@ def find_food_moves(my_head, my_health, foods, possible_moves):
             closest_food = food
             closest_distance = current_distance
 
-    health_buffer = 10
-    if my_health - closest_distance > health_buffer:
-        return possible_moves
+    #health_buffer = 10
+    #if my_health - closest_distance > health_buffer:
+    #    return possible_moves
 
     good_moves = []
     if my_head["x"] > closest_food["x"]:
