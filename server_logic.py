@@ -58,6 +58,8 @@ def avoid_snake(my_head: Dict[str, int], snake_body: List[dict], possible_moves:
             try_remove_move("down", possible_moves)
         elif body_part["y"] > my_head["y"]:
             try_remove_move("up", possible_moves)
+
+    return possible_moves
     
 
 def choose_move(data: dict) -> str:
