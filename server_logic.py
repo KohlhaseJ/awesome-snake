@@ -34,7 +34,6 @@ def avoid_my_neck(my_head: Dict[str, int], my_body: List[dict], possible_moves: 
     return possible_moves
 
 
-
 def avoid_the_wall(my_head, the_board_height, the_board_width, possible_moves: List[str]) -> List[str]:    
     if my_head["x"] == 0:
         try_remove_move("left", possible_moves)
@@ -48,10 +47,9 @@ def avoid_the_wall(my_head, the_board_height, the_board_width, possible_moves: L
     return possible_moves
 
 
-def avoid_myself(my_head: Dict[str, int], my_body: List[dict], possible_moves: List[str]) -> List[str]:
-    # 2 as head cannot and neck is already tested and len()-1 because the tail will move you can just follow
-    for i in range(2, len(my_body)-1):
-        body_part = my_body[i]
+def avoid_snake(my_head: Dict[str, int], snake_body: List[dict], possible_moves: List[str]) -> List[str]:
+    for i in range(0, len(snake_body)):
+        body_part = snake_body[i]
         if body_part["x"] < my_head["x"]:
             try_remove_move("left", possible_moves)
         elif body_part["x"] > my_head["x"]:
@@ -60,10 +58,6 @@ def avoid_myself(my_head: Dict[str, int], my_body: List[dict], possible_moves: L
             try_remove_move("down", possible_moves)
         elif body_part["y"] > my_head["y"]:
             try_remove_move("up", possible_moves)
-    
-    print(f"possible_moves {possible_moves}")
-
-    return possible_moves
     
 
 def choose_move(data: dict) -> str:
@@ -98,9 +92,12 @@ def choose_move(data: dict) -> str:
     possible_moves = avoid_the_wall(my_head, the_board_height, the_board_width, possible_moves)
 
     # TODO Using information from 'data', don't let your Battlesnake pick a move that would hit its own body
-    possible_moves = avoid_myself(my_head, my_body, possible_moves)
+    possible_moves = avoid_snake(my_head, my_body[2:], possible_moves)
 
     # TODO: Using information from 'data', don't let your Battlesnake pick a move that would collide with another Battlesnake
+    for snake in data["board"]["snakes"]:
+        snake_body = snake["body"]
+        possible_moves = avoid_snake(my_head, snake_body, possible_moves)
 
     # TODO: Using information from 'data', make your Battlesnake move towards a piece of food on the board
 
