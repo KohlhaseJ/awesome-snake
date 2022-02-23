@@ -57,11 +57,11 @@ def find_food_moves(my_head, foods, possible_moves):
 
     if my_head["x"] > closest_food["x"]:
         good_moves.append("left")
-    else:
+    elif my_head["x"] < closest_food["x"]:
         good_moves.append("right")
     if my_head["y"] > closest_food["y"]:
         good_moves.append("down")
-    else:
+    elif my_head["y"] < closest_food["y"]:
         good_moves.append("up")
 
     move_intersection = set(possible_moves).intersection(set(good_moves))
