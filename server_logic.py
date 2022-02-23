@@ -41,7 +41,7 @@ def point_distance(point1, point2):
     return math.sqrt((point1["x"]-point2["x"])**2 + (point1["y"]-point2["y"])**2)
 
 
-def find_food_moves(my_head, foods, possible_moves):
+def find_food_moves(my_head, my_health, foods, possible_moves):
     if len(possible_moves) < 1:
         return possible_moves
     if len(foods) == 0:
@@ -55,8 +55,11 @@ def find_food_moves(my_head, foods, possible_moves):
             closest_food = food
             closest_distance = current_distance
 
-    good_moves = []
+    health_buffer = 10
+    if my_health - closest_distance > health_buffer:
+        return possible_moves
 
+    good_moves = []
     if my_head["x"] > closest_food["x"]:
         good_moves.append("left")
     elif my_head["x"] < closest_food["x"]:
@@ -133,7 +136,7 @@ def choose_move(data: dict) -> str:
         possible_moves = avoid_snake(my_head, snake_body, possible_moves)
 
     # try to move towards food
-    possible_moves = find_food_moves(my_head, data["board"]["food"], possible_moves)
+    possible_moves = find_food_moves(my_head, data["you"]["health"], data["board"]["food"], possible_moves)
 
     # if have a choice go centric
     possible_moves = go_centric(my_head, the_board_height, the_board_width, possible_moves)
