@@ -1,37 +1,7 @@
+from operator import pos
 import random
+import math
 from typing import List, Dict
-
-"""
-This file can be a nice home for your move logic, and to write helper functions.
-
-We have started this for you, with a function to help remove the 'neck' direction
-from the list of possible moves!
-"""
-
-
-def avoid_my_neck(my_head: Dict[str, int], my_body: List[dict], possible_moves: List[str]) -> List[str]:
-    """
-    my_head: Dictionary of x/y coordinates of the Battlesnake head.
-            e.g. {"x": 0, "y": 0}
-    my_body: List of dictionaries of x/y coordinates for every segment of a Battlesnake.
-            e.g. [ {"x": 0, "y": 0}, {"x": 1, "y": 0}, {"x": 2, "y": 0} ]
-    possible_moves: List of strings. Moves to pick from.
-            e.g. ["up", "down", "left", "right"]
-
-    return: The list of remaining possible_moves, with the 'neck' direction removed
-    """
-    my_neck = my_body[1]  # The segment of body right after the head is the 'neck'
-
-    if my_neck["x"] < my_head["x"]:  # my neck is left of my head
-        try_remove_move("left", possible_moves)
-    elif my_neck["x"] > my_head["x"]:  # my neck is right of my head
-        try_remove_move("right", possible_moves)
-    elif my_neck["y"] < my_head["y"]:  # my neck is below my head
-        try_remove_move("down", possible_moves)
-    elif my_neck["y"] > my_head["y"]:  # my neck is above my head
-        try_remove_move("up", possible_moves)
-
-    return possible_moves
 
 
 def avoid_the_wall(my_head, the_board_height, the_board_width, possible_moves: List[str]) -> List[str]:    
@@ -65,6 +35,39 @@ def avoid_snake(my_head: Dict[str, int], snake_body: List[dict], possible_moves:
                 try_remove_move("down", possible_moves)
 
     return possible_moves
+
+
+def point_distance(point1, point2):
+    return math.sqrt((point1["x"]-point2["x"])**2 + (point1["y"]-point2["y"])**2)
+
+
+def find_food_moves(my_head, foods, possible_moves):
+    if len(foods) == 0:
+        return possible_moves
+
+    closest_food = foods[0]
+    closest_distance = point_distance(my_head, closest_food)
+    for food in foods[1:]:
+        current_distance = point_distance(my_head, food)
+        if current_distance < closest_distance:
+            closest_food = food
+            closest_distance = current_distance
+
+    good_moves = []
+
+    if my_head["x"] > closest_food["x"]:
+        good_moves.append("left")
+    else:
+        good_moves.append("right")
+    if my_head["y"] > closest_food["y"]:
+        good_moves.append("down")
+    else:
+        good_moves.append("up")
+
+    move_intersection = set(possible_moves).intersection(set(good_moves))
+    if len(move_intersection) > 0:
+        return list(move_intersection)
+    return possible_moves
     
 
 def choose_move(data: dict) -> str:
@@ -91,33 +94,21 @@ def choose_move(data: dict) -> str:
     possible_moves = ["up", "down", "left", "right"]
     print(possible_moves)
 
-    # Don't allow your Battlesnake to move back in on it's own neck
-    possible_moves = avoid_my_neck(my_head, my_body, possible_moves)
-    print(possible_moves)
-
-
-    # TODO: Using information from 'data', find the edges of the board and don't let your Battlesnake move beyond them
+    # do not hit any walls
     the_board_height = data["board"]["height"]
     the_board_width = data["board"]["width"]
     possible_moves = avoid_the_wall(my_head, the_board_height, the_board_width, possible_moves)
     print(possible_moves)
 
 
-    # TODO Using information from 'data', don't let your Battlesnake pick a move that would hit its own body
-    possible_moves = avoid_snake(my_head, my_body[2:], possible_moves)
-    print(possible_moves)
-
-
-    # TODO: Using information from 'data', don't let your Battlesnake pick a move that would collide with another Battlesnake
+    # do not hit anybody
+    possible_moves = avoid_snake(my_head, my_body, possible_moves)
     for snake in data["board"]["snakes"]:
         snake_body = snake["body"]
-        print(snake)
         possible_moves = avoid_snake(my_head, snake_body, possible_moves)
-        print(possible_moves)
 
-    print(possible_moves)
-
-    # TODO: Using information from 'data', make your Battlesnake move towards a piece of food on the board
+    # try to move towards food
+    possible_moves = find_food_moves(my_head, data["board"]["food"], possible_moves)
 
     # Choose a random direction from the remaining possible_moves to move in, and then return that move
     move = random.choice(possible_moves)
