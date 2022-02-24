@@ -40,6 +40,8 @@ def get_legal_moves(my_head, board):
 
     if y == 0 or board[y-1][x] == BLOCKED:
         try_remove_move("down", possible_moves)
+    
+    return possible_moves
 
 
 def avoid_the_wall(my_head, the_board_height, the_board_width, possible_moves: List[str]) -> List[str]:    
@@ -158,7 +160,6 @@ def choose_move(data: dict) -> str:
     # print(f"My Battlesnakes body this turn is: {my_body}")
 
     possible_moves = ["up", "down", "left", "right"]
-    print(possible_moves)
 
     # do not hit any walls
     the_board_height = data["board"]["height"]
@@ -173,8 +174,10 @@ def choose_move(data: dict) -> str:
     #    possible_moves = avoid_snake(my_head, snake_body, possible_moves)
 
     board = generate_board(data)
+    print(board)
 
     possible_moves = get_legal_moves(my_head, board)
+    print(possible_moves)
 
     # try to move towards food
     possible_moves = find_food_moves(my_head, data["you"]["health"], data["board"]["food"], possible_moves)
