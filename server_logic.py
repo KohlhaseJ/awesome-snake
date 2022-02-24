@@ -9,7 +9,7 @@ BLOCKED = 1
 def generate_board(data):
     board_height = data["board"]["height"]
     board_width = data["board"]["width"]
-    board = [[FREE for _ in board_width] for _ in board_height]
+    board = [[FREE for _ in range(board_width)] for _ in range(board_height)]
 
     my_body = data["you"]["body"]
     bodies = [snake["body"] for snake in data["board"]["snakes"]]
