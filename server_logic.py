@@ -3,6 +3,44 @@ import random
 import math
 from typing import List, Dict
 
+FREE = 0
+BLOCKED = 1
+
+def generate_board(data):
+    board_height = data["board"]["height"]
+    board_width = data["board"]["width"]
+    board = [[FREE for _ in board_width] for _ in board_height]
+
+    my_body = data["you"]["body"]
+    bodies = [snake["body"] for snake in data["board"]["snakes"]]
+    bodies.append(my_body)
+    blocked_points = [item for sublist in bodies for item in sublist]
+    for point in blocked_points:
+        x = point["x"]
+        y = point["y"]
+        board[x][y] = BLOCKED
+    
+    return board
+
+def get_legal_moves(my_head, board):
+    possible_moves = ["up", "down", "left", "right"]
+    x = my_head["x"]
+    y = my_head["y"]
+    board_width = len(board[0])
+    board_height = len(board)
+
+    if x == 0 or board[y][x-1] == BLOCKED:
+        try_remove_move("left", possible_moves)
+
+    if y == board_height-1 or board[y+1][x] == BLOCKED:
+        try_remove_move("up", possible_moves)
+
+    if x == board_width -1 or board[y][x+1] == BLOCKED:
+        try_remove_move("right", possible_moves)
+
+    if y == 0 or board[y-1][x] == BLOCKED:
+        try_remove_move("down", possible_moves)
+
 
 def avoid_the_wall(my_head, the_board_height, the_board_width, possible_moves: List[str]) -> List[str]:    
     if my_head["x"] == 0:
@@ -125,15 +163,18 @@ def choose_move(data: dict) -> str:
     # do not hit any walls
     the_board_height = data["board"]["height"]
     the_board_width = data["board"]["width"]
-    possible_moves = avoid_the_wall(my_head, the_board_height, the_board_width, possible_moves)
-    print(possible_moves)
+    #possible_moves = avoid_the_wall(my_head, the_board_height, the_board_width, possible_moves)
 
 
     # do not hit anybody
-    possible_moves = avoid_snake(my_head, my_body, possible_moves)
-    for snake in data["board"]["snakes"]:
-        snake_body = snake["body"]
-        possible_moves = avoid_snake(my_head, snake_body, possible_moves)
+    #possible_moves = avoid_snake(my_head, my_body, possible_moves)
+    #for snake in data["board"]["snakes"]:
+    #    snake_body = snake["body"]
+    #    possible_moves = avoid_snake(my_head, snake_body, possible_moves)
+
+    board = generate_board(data)
+
+    possible_moves = get_legal_moves(my_head, board)
 
     # try to move towards food
     possible_moves = find_food_moves(my_head, data["you"]["health"], data["board"]["food"], possible_moves)
