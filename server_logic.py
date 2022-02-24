@@ -18,7 +18,7 @@ def generate_board(data):
     for point in blocked_points:
         x = point["x"]
         y = point["y"]
-        board[x][y] = BLOCKED
+        board[y][x] = BLOCKED
     
     return board
 
@@ -35,7 +35,7 @@ def get_legal_moves(my_head, board):
     if y == board_height-1 or board[y+1][x] == BLOCKED:
         try_remove_move("up", possible_moves)
 
-    if x == board_width -1 or board[y][x+1] == BLOCKED:
+    if x == board_width-1 or board[y][x+1] == BLOCKED:
         try_remove_move("right", possible_moves)
 
     if y == 0 or board[y-1][x] == BLOCKED:
