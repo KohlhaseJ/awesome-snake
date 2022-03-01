@@ -197,7 +197,7 @@ def choose_move(data: dict) -> str:
     food_moves = get_food_moves(my_head, foods, legal_moves)
     print(f"food_moves: {food_moves}")
     for move in food_moves:
-        rated_moves[move] += (100 - my_health)
+        rated_moves[move] += (150 - my_health)
 
     # rate moves based on space left
     total_space = board_space(board)
