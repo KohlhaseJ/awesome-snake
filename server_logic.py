@@ -22,12 +22,9 @@ def generate_board(data):
     board_width = data["board"]["width"]
     board = [[FREE for _ in range(board_width)] for _ in range(board_height)]
 
-    # blocked by my body or other snakes
-    my_body = data["you"]["body"]
+    # blocked by snakes
     snakes = data["board"]["snakes"]
     bodies = [snake["body"] for snake in snakes]
-    bodies.append(my_body)
-
     blocked_points = [item for sublist in bodies for item in sublist]
         
     # mark blocked points on the board
@@ -213,7 +210,8 @@ def choose_move(data: dict) -> str:
     # initially rate all legal moves
     rated_moves = {}
     my_length = data["you"]["length"]
-    snakes = data["board"]["snakes"]
+    my_id = data["you"]["id"]
+    snakes = [snake for snake in data["board"]["snakes"] if snake["id"] != my_id]
     for move in legal_moves:
         if would_hit_longer_snake(my_head, move, my_length, snakes, board):
             rated_moves[move] = 0
