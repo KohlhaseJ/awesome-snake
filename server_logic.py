@@ -66,13 +66,17 @@ def get_legal_moves(my_head, board):
     
     return legal_moves
 
+def would_hit_longer_snake(my_head, move, my_length, snakes):
+    for snake in snakes:
+        snake_head = snake["head"]
+        snake_length = snake["length"]
+        if my_length < snake_length:
+            new_head = move_my_head(my_head, move)
+            if new_head == snake_head:
+                return True
+    return False
 
-def board_space(board):
-    flat_board = [item for sublist in board for item in sublist]
-    return sum(1 for position in flat_board if position == FREE)
-
-
-def free_space(my_head, board, move):
+def move_my_head(my_head, move):
     x = my_head["x"]
     y = my_head["y"]
     
@@ -84,7 +88,16 @@ def free_space(my_head, board, move):
         new_head = {"x": x+1, "y": y}
     if move == "down":
         new_head = {"x": x, "y": y-1}
+    
+    return new_head
 
+def board_space(board):
+    flat_board = [item for sublist in board for item in sublist]
+    return sum(1 for position in flat_board if position == FREE)
+
+
+def free_space(my_head, board, move):
+    new_head = move_my_head(my_head, move)
     space = 1 if get_board_value(board, new_head["x"], new_head["y"]) == FREE else 0
     set_board_value(board, new_head["x"], new_head["y"], BLOCKED)
     next_moves = get_legal_moves(new_head, board)
@@ -126,7 +139,8 @@ def get_food_moves(my_head, foods, legal_moves):
 def get_space_per_move(my_head, board, legal_moves):
     space_per_move = {}
     for move in legal_moves:
-        space = free_space(my_head, board.copy(), move)
+        board_copy = board.deepcopy()
+        space = free_space(my_head, board_copy, move)
         space_per_move[move] = space
     return space_per_move
     
@@ -185,10 +199,15 @@ def choose_move(data: dict) -> str:
     legal_moves = get_legal_moves(my_head, board)
     print(f"Possible moves: {legal_moves}")
 
-    # all legal moves are initially rated with zero
+    # initially rate all legal moves
     rated_moves = {}
+    my_length = data["you"]["length"]
+    snakes = data["board"]["snakes"]
     for move in legal_moves:
-        rated_moves[move] = 0
+        if would_hit_longer_snake(my_head, move, my_length, snakes):
+            rated_moves[move] = -1
+        else:
+            rated_moves[move] = 0
     
     # rate moves bringing me closer to food by my health
     foods = data["board"]["food"]
