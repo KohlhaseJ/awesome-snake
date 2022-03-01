@@ -7,20 +7,44 @@ FREE = 0
 BLOCKED = 1
 
 def generate_board(data):
+    # the board
     board_height = data["board"]["height"]
     board_width = data["board"]["width"]
     board = [[FREE for _ in range(board_width)] for _ in range(board_height)]
 
+    # blocked by my body or other snakes
     my_body = data["you"]["body"]
-    bodies = [snake["body"] for snake in data["board"]["snakes"]]
+    my_length = data["you"]["length"]
+    snakes = data["board"]["snakes"]
+    bodies = [snake["body"] for snake in snakes]
     bodies.append(my_body)
+
     blocked_points = [item for sublist in bodies for item in sublist]
+    # do not run into positions longer snakes could go    
+    for head in [snake["head"] for snake in snakes if snake["length"] > my_length]:
+        x = head["x"]
+        y = head["y"] 
+        blocked_points.append({"x": x-1, "y", y})
+        blocked_points.append({"x": x, "y", y+1})
+        blocked_points.append({"x": x+1, "y", y})
+        blocked_points.append({"x": x, "y", y-1})
+    
+    # mark blocked points on the board
     for point in blocked_points:
         x = point["x"]
-        y = point["y"]
-        board[y][x] = BLOCKED
+        y = point["y"]        
+        if not (x < 0 or y < 0 or x >= board_width or y >= board_height):
+            board[y][x] = BLOCKED
     
     return board
+
+def is_legal_move(board, x, y):
+    board_width = len(board[0])
+    board_height = len(board)
+    if x < 0 or y < 0 or x >= board_width or y >= board_height:
+        return false
+    
+    return board[y][x] == BLOCKED
 
 def get_legal_moves(my_head, board):
     possible_moves = ["up", "down", "left", "right"]
@@ -29,19 +53,45 @@ def get_legal_moves(my_head, board):
     board_width = len(board[0])
     board_height = len(board)
 
-    if x == 0 or board[y][x-1] == BLOCKED:
+    if not is_legal_move(board, x-1, y):
         try_remove_move("left", possible_moves)
 
-    if y == board_height-1 or board[y+1][x] == BLOCKED:
+    if not is_legal_move(board, x, y+1):
         try_remove_move("up", possible_moves)
 
-    if x == board_width-1 or board[y][x+1] == BLOCKED:
+    if not is_legal_move(board, x+1, y):
         try_remove_move("right", possible_moves)
 
-    if y == 0 or board[y-1][x] == BLOCKED:
+    if not is_legal_move(board, x, y-1):
         try_remove_move("down", possible_moves)
     
     return possible_moves
+
+
+def free_space(my_head, board, move):
+    x = my_head["x"]
+    y = my_head["y"]
+    if move == "left":
+        new_head = {"x": x-1, "y": y}
+    if move == "up":
+        new_head = {"x": x, "y": y+1}
+    if move == "right":
+        new_head = {"x": x+1, "y": y}
+    if move == "down":
+        new_head = {"x": x, "y": y-1}
+    
+    nx = new_head["x"]
+    ny = new_head["y"]
+    possible_moves = ["left", "up", "down", "right"]
+    possible_moves.remove(move)
+
+    if is_legal_move(board, nx, ny):
+        space = 1
+        for next_move in possible_moves:
+            space += free_space(new_head, board, next_move)
+        return space
+    
+    return 0
 
 
 def avoid_the_wall(my_head, the_board_height, the_board_width, possible_moves: List[str]) -> List[str]:    
@@ -154,43 +204,40 @@ def choose_move(data: dict) -> str:
     my_body = data["you"]["body"]  # A list of x/y coordinate dictionaries like [ {"x": 0, "y": 0}, {"x": 1, "y": 0}, {"x": 2, "y": 0} ]
 
     # TODO: uncomment the lines below so you can see what this data looks like in your output!
-    # print(f"~~~ Turn: {data['turn']}  Game Mode: {data['game']['ruleset']['name']} ~~~")
+    print(f"~~~ Turn: {data['turn']}  Game Mode: {data['game']['ruleset']['name']} ~~~")
     # print(f"All board data this turn: {data}")
     # print(f"My Battlesnakes head this turn is: {my_head}")
     # print(f"My Battlesnakes body this turn is: {my_body}")
 
-    possible_moves = ["up", "down", "left", "right"]
-
-    # do not hit any walls
-    the_board_height = data["board"]["height"]
-    the_board_width = data["board"]["width"]
-    #possible_moves = avoid_the_wall(my_head, the_board_height, the_board_width, possible_moves)
-
-
-    # do not hit anybody
-    #possible_moves = avoid_snake(my_head, my_body, possible_moves)
-    #for snake in data["board"]["snakes"]:
-    #    snake_body = snake["body"]
-    #    possible_moves = avoid_snake(my_head, snake_body, possible_moves)
-
+    # generate the game board with all occupied points
     board = generate_board(data)
-    print(board)
+    print("Current board:")
+    for line in board:
+        print(line)
 
+    # get the legal moves from current position and board
     possible_moves = get_legal_moves(my_head, board)
-    print(possible_moves)
+    print(f"Possible moves: {possible_moves}")
 
     # try to move towards food
     possible_moves = find_food_moves(my_head, data["you"]["health"], data["board"]["food"], possible_moves)
 
     # if have a choice go centric
-    possible_moves = go_centric(my_head, the_board_height, the_board_width, possible_moves)
+    # possible_moves = go_centric(my_head, the_board_height, the_board_width, possible_moves)
 
     # Choose a random direction from the remaining possible_moves to move in, and then return that move
-    move = random.choice(possible_moves)
-    # TODO: Explore new strategies for picking a move that are better than random
+    #move = random.choice(possible_moves)
 
+    # head in direction of most free space
+    move = ''
+    space = 0
+    for tmp_move in possible_moves:
+        tmp_space = free_space(my_head, board, move)
+        if tmpspace > space:
+            space = tmp_space
+            move = tmp_move
+    
     print(f"{data['game']['id']} MOVE {data['turn']}: {move} picked from all valid options in {possible_moves}")
-
     return move
 
 def try_remove_move(move, possible_moves):
