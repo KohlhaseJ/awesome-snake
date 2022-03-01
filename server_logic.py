@@ -44,7 +44,7 @@ def is_legal_move(board, x, y):
     if x < 0 or y < 0 or x >= board_width or y >= board_height:
         return False
     
-    return board[y][x] == BLOCKED
+    return board[y][x] == FREE
 
 def get_legal_moves(my_head, board):
     possible_moves = ["up", "down", "left", "right"]
@@ -228,6 +228,7 @@ def choose_move(data: dict) -> str:
     space = 0
     for tmp_move in possible_moves:
         tmp_space = free_space(my_head, board, move)
+        print(tmp_space)
         if tmp_space > space:
             space = tmp_space
             move = tmp_move
