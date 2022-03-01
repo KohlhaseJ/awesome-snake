@@ -26,21 +26,12 @@ def generate_board(data):
 
     # blocked by my body or other snakes
     my_body = data["you"]["body"]
-    my_length = data["you"]["length"]
     snakes = data["board"]["snakes"]
     bodies = [snake["body"] for snake in snakes]
     bodies.append(my_body)
 
     blocked_points = [item for sublist in bodies for item in sublist]
-    # do not run into positions longer snakes could go    
-    for head in [snake["head"] for snake in snakes if snake["length"] > my_length]:
-        x = head["x"]
-        y = head["y"] 
-        blocked_points.append({"x": x-1, "y": y})
-        blocked_points.append({"x": x, "y": y+1})
-        blocked_points.append({"x": x+1, "y": y})
-        blocked_points.append({"x": x, "y": y-1})
-    
+        
     # mark blocked points on the board
     for point in blocked_points:
         x = point["x"]
@@ -76,6 +67,11 @@ def get_legal_moves(my_head, board):
         try_remove_move("down", legal_moves)
     
     return legal_moves
+
+
+def board_space(board):
+    flat_board = [item for sublist in board for item in sublist]
+    return sum(1 for position in flat_board if position == FREE)
 
 
 def free_space(my_head, board, move):
@@ -191,27 +187,29 @@ def choose_move(data: dict) -> str:
     legal_moves = get_legal_moves(my_head, board)
     print(f"Possible moves: {legal_moves}")
 
-    # get moves bringing me closer to food
+    # all legal moves are initially rated with zero
+    rated_moves = {}
+    for move in legal_moves:
+        rated_moves[move] = 0
+    
+    # rate moves bringing me closer to food by my health
     foods = data["board"]["food"]
+    my_health = data["you"]["health"]
     food_moves = get_food_moves(my_head, foods, legal_moves)
     print(f"food_moves: {food_moves}")
+    for move in food_moves:
+        rated_moves[move] += (100 - my_health)
 
-    # get space left for all moves
+    # rate moves based on space left
+    total_space = board_space(board)
     space_per_move = get_space_per_move(my_head, board, legal_moves)
     print(f"space_per_move: {space_per_move}")
-    my_length = data["you"]["length"]
-    print(f"my_length: {my_length}")
-    space_moves = [key for key, value in space_per_move.items() if value > my_length]
-
-    move_intersection = list(set(food_moves).intersection(set(space_moves)))
-
-    if len(move_intersection) > 0:
-        new_dict = {}
-        for key in move_intersection:
-            new_dict[key] = space_per_move[key]
-        space_per_move = new_dict
+    for key, value in space_per_move.items():
+        rated_moves[key] = (value/total_space)*100
     
-    move = max(space_per_move, key=space_per_move.get)    
+    # select best rated move
+    print(f"rated_moves: {rated_moves}")
+    move = max(rated_moves, key=rated_moves.get)
     
     print(f"{data['game']['id']} MOVE {data['turn']}: {move} picked from all valid options in {legal_moves}")
     return move
