@@ -1,7 +1,5 @@
 from operator import pos
-import random
 import math
-from typing import List, Dict
 
 FREE = 0
 BLOCKED = 1
@@ -195,6 +193,7 @@ def choose_move(data: dict) -> str:
     # rate moves bringing me closer to food by my health
     foods = data["board"]["food"]
     my_health = data["you"]["health"]
+    print(f"my_health: {my_health}")
     food_moves = get_food_moves(my_head, foods, legal_moves)
     print(f"food_moves: {food_moves}")
     for move in food_moves:
@@ -202,6 +201,7 @@ def choose_move(data: dict) -> str:
 
     # rate moves based on space left
     total_space = board_space(board)
+    print(f"total_space: {total_space}")
     space_per_move = get_space_per_move(my_head, board, legal_moves)
     print(f"space_per_move: {space_per_move}")
     for key, value in space_per_move.items():
