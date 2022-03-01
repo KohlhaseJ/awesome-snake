@@ -42,7 +42,7 @@ def is_legal_move(board, x, y):
     board_width = len(board[0])
     board_height = len(board)
     if x < 0 or y < 0 or x >= board_width or y >= board_height:
-        return false
+        return False
     
     return board[y][x] == BLOCKED
 
@@ -50,8 +50,6 @@ def get_legal_moves(my_head, board):
     possible_moves = ["up", "down", "left", "right"]
     x = my_head["x"]
     y = my_head["y"]
-    board_width = len(board[0])
-    board_height = len(board)
 
     if not is_legal_move(board, x-1, y):
         try_remove_move("left", possible_moves)
@@ -212,7 +210,7 @@ def choose_move(data: dict) -> str:
     # generate the game board with all occupied points
     board = generate_board(data)
     print("Current board:")
-    for line in board:
+    for line in reversed(board):
         print(line)
 
     # get the legal moves from current position and board
