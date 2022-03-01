@@ -210,7 +210,7 @@ def choose_move(data: dict) -> str:
     
     move = max(space_per_move, key=space_per_move.get)    
     
-    print(f"{data['game']['id']} MOVE {data['turn']}: {move} picked from all valid options in {possible_moves}")
+    print(f"{data['game']['id']} MOVE {data['turn']}: {move} picked from all valid options in {legal_moves}")
     return move
 
 def try_remove_move(move, possible_moves):
