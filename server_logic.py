@@ -198,7 +198,7 @@ def choose_move(data: dict) -> str:
     # get space left for all moves
     space_per_move = get_space_per_move(my_head, board, legal_moves)
     my_length = data["you"]["length"]
-    space_moves = [key for key, value in space_per_move if value > my_length]
+    space_moves = [key for key, value in space_per_move.items() if value > my_length]
 
     move_intersection = list(set(food_moves).intersection(set(space_moves)))
 
