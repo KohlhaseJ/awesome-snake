@@ -24,10 +24,10 @@ def generate_board(data):
     for head in [snake["head"] for snake in snakes if snake["length"] > my_length]:
         x = head["x"]
         y = head["y"] 
-        blocked_points.append({"x": x-1, "y", y})
-        blocked_points.append({"x": x, "y", y+1})
-        blocked_points.append({"x": x+1, "y", y})
-        blocked_points.append({"x": x, "y", y-1})
+        blocked_points.append({"x": x-1, "y": y})
+        blocked_points.append({"x": x, "y": y+1})
+        blocked_points.append({"x": x+1, "y": y})
+        blocked_points.append({"x": x, "y": y-1})
     
     # mark blocked points on the board
     for point in blocked_points:
@@ -225,15 +225,12 @@ def choose_move(data: dict) -> str:
     # if have a choice go centric
     # possible_moves = go_centric(my_head, the_board_height, the_board_width, possible_moves)
 
-    # Choose a random direction from the remaining possible_moves to move in, and then return that move
-    #move = random.choice(possible_moves)
-
     # head in direction of most free space
-    move = ''
+    move = random.choice(possible_moves)
     space = 0
     for tmp_move in possible_moves:
         tmp_space = free_space(my_head, board, move)
-        if tmpspace > space:
+        if tmp_space > space:
             space = tmp_space
             move = tmp_move
     
