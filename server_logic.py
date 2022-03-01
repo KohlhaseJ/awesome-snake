@@ -82,8 +82,8 @@ def free_space(my_head, board, move):
         new_head = {"x": x, "y": y-1}
 
     next_moves = get_legal_moves(new_head, board)
-    next_moves.remove(OPPOSITE_MOVES[move])
-    
+    try_remove_move(OPPOSITE_MOVES[move], next_moves)
+
     space = 1
     for next_move in next_moves:
         space += free_space(new_head, board, next_move)
