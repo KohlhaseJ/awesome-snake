@@ -81,6 +81,7 @@ def get_legal_moves(my_head, board):
 def free_space(my_head, board, move):
     x = my_head["x"]
     y = my_head["y"]
+    
     if move == "left":
         new_head = {"x": x-1, "y": y}
     if move == "up":
@@ -90,12 +91,11 @@ def free_space(my_head, board, move):
     if move == "down":
         new_head = {"x": x, "y": y-1}
 
+    space = 1 if get_board_value(board, new_head["x"], new_head["y"]) == FREE else 0
     set_board_value(board, new_head["x"], new_head["y"], BLOCKED)
     next_moves = get_legal_moves(new_head, board)
-
-    space = 1
-    if len(next_moves) > 0:
-        space += free_space(new_head, board, next_moves[0])
+    for next_move in next_moves:
+        space += free_space(new_head, board, next_move)
     return space
 
 
