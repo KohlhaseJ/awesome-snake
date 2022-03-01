@@ -82,7 +82,7 @@ def would_hit_longer_snake(my_head, move, my_length, snakes):
         snake_length = snake["length"]
         if my_length <= snake_length:
             new_head = move_my_head(my_head, move)
-            if new_head == snake_head:
+            if new_head["x"] == snake_head["x"] and new_head["y"] == snake_head["y"]:
                 return True
     return False
 
