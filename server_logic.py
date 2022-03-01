@@ -5,6 +5,9 @@ from typing import List, Dict
 
 FREE = 0
 BLOCKED = 1
+POSSIBLE_MOVES = ["up", "down", "left", "right"]
+OPPOSITE_MOVES = {"up": "down", "down": "up", "left": "right", "right": "left"}
+
 
 def generate_board(data):
     # the board
@@ -47,23 +50,23 @@ def is_legal_move(board, x, y):
     return board[y][x] == FREE
 
 def get_legal_moves(my_head, board):
-    possible_moves = ["up", "down", "left", "right"]
+    legal_moves = POSSIBLE_MOVES
     x = my_head["x"]
     y = my_head["y"]
 
     if not is_legal_move(board, x-1, y):
-        try_remove_move("left", possible_moves)
+        try_remove_move("left", legal_moves)
 
     if not is_legal_move(board, x, y+1):
-        try_remove_move("up", possible_moves)
+        try_remove_move("up", legal_moves)
 
     if not is_legal_move(board, x+1, y):
-        try_remove_move("right", possible_moves)
+        try_remove_move("right", legal_moves)
 
     if not is_legal_move(board, x, y-1):
-        try_remove_move("down", possible_moves)
+        try_remove_move("down", legal_moves)
     
-    return possible_moves
+    return legal_moves
 
 
 def free_space(my_head, board, move):
@@ -80,49 +83,16 @@ def free_space(my_head, board, move):
     
     nx = new_head["x"]
     ny = new_head["y"]
-    possible_moves = ["left", "up", "down", "right"]
-    possible_moves.remove(move)
+    next_moves = POSSIBLE_MOVES
+    next_moves.remove(OPPOSITE_MOVES[move])
 
     if is_legal_move(board, nx, ny):
         space = 1
-        for next_move in possible_moves:
+        for next_move in next_moves:
             space += free_space(new_head, board, next_move)
         return space
     
     return 0
-
-
-def avoid_the_wall(my_head, the_board_height, the_board_width, possible_moves: List[str]) -> List[str]:    
-    if my_head["x"] == 0:
-        try_remove_move("left", possible_moves)
-    if my_head["y"] == 0:
-        try_remove_move("down", possible_moves)
-    if my_head["x"] == the_board_width-1:
-        try_remove_move("right", possible_moves)
-    if my_head["y"] == the_board_height-1:
-        try_remove_move("up", possible_moves)
-
-    return possible_moves
-
-
-def avoid_snake(my_head: Dict[str, int], snake_body: List[dict], possible_moves: List[str]) -> List[str]:
-    for i in range(0, len(snake_body)):
-        body_part = snake_body[i]
-        if body_part["y"] == my_head["y"]:
-            difference = body_part["x"] - my_head["x"]
-            if difference == 1:
-                try_remove_move("right", possible_moves)
-            elif difference == -1:
-                try_remove_move("left", possible_moves)
-        
-        if body_part["x"] == my_head["x"]:
-            difference = body_part["y"] - my_head["y"]
-            if difference == 1:
-                try_remove_move("up", possible_moves)
-            elif difference == -1:
-                try_remove_move("down", possible_moves)
-
-    return possible_moves
 
 
 def point_distance(point1, point2):
