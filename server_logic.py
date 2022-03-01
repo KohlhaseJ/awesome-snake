@@ -103,11 +103,11 @@ def point_distance(point1, point2):
     return math.sqrt((point1["x"]-point2["x"])**2 + (point1["y"]-point2["y"])**2)
 
 
-def find_food_moves(my_head, my_health, foods, possible_moves):
-    if len(possible_moves) < 1:
-        return possible_moves
+def get_food_moves(my_head, foods, legal_moves):
+    if len(legal_moves) < 1:
+        return legal_moves
     if len(foods) == 0:
-        return possible_moves
+        return legal_moves
 
     closest_food = foods[0]
     closest_distance = point_distance(my_head, closest_food)
@@ -116,10 +116,6 @@ def find_food_moves(my_head, my_health, foods, possible_moves):
         if current_distance < closest_distance:
             closest_food = food
             closest_distance = current_distance
-
-    #health_buffer = 10
-    #if my_health - closest_distance > health_buffer:
-    #    return possible_moves
 
     good_moves = []
     if my_head["x"] > closest_food["x"]:
@@ -131,10 +127,14 @@ def find_food_moves(my_head, my_health, foods, possible_moves):
     elif my_head["y"] < closest_food["y"]:
         good_moves.append("up")
 
-    move_intersection = set(possible_moves).intersection(set(good_moves))
-    if len(move_intersection) > 0:
-        return list(move_intersection)
-    return possible_moves
+    return list(set(legal_moves).intersection(set(good_moves)))
+
+def get_space_per_move(my_head, board, legal_moves):
+    space_per_move = {}
+    for move in legal_moves:
+        space = free_space(my_head, board.copy(), move)
+        space_per_move[move] = space
+    return space_per_move
     
 def go_centric(my_head, the_board_height, the_board_width, possible_moves):
     if(len(possible_moves) < 1):
@@ -188,26 +188,27 @@ def choose_move(data: dict) -> str:
         print(line)
 
     # get the legal moves from current position and board
-    possible_moves = get_legal_moves(my_head, board)
-    print(f"Possible moves: {possible_moves}")
+    legal_moves = get_legal_moves(my_head, board)
+    print(f"Possible moves: {legal_moves}")
 
-    # try to move towards food
-    possible_moves = find_food_moves(my_head, data["you"]["health"], data["board"]["food"], possible_moves)
+    # get moves bringing me closer to food
+    foods = data["board"]["food"]
+    food_moves = get_food_moves(my_head, foods, legal_moves)
 
-    # if have a choice go centric
-    # possible_moves = go_centric(my_head, the_board_height, the_board_width, possible_moves)
+    # get space left for all moves
+    space_per_move = get_space_per_move(my_head, board, legal_moves)
+    my_length = data["you"]["length"]
+    space_moves = [key for key, value in space_per_move if value > my_length]
 
-    # head in direction of most free space
-    move = ""
-    space = 0
-    space_per_move = {}
-    for tmp_move in possible_moves:
-        tmp_space = free_space(my_head, board.copy(), tmp_move)
-        space_per_move[tmp_move] = tmp_space
-        if tmp_space > space:
-            space = tmp_space
-            move = tmp_move
-    print(space_per_move)
+    move_intersection = list(set(food_moves).intersection(set(space_moves)))
+
+    if len(move_intersection) > 0:
+        new_dict = {}
+        for key in move_intersection:
+            new_dict[key] = space_per_move[key]
+        space_per_move = new_dict
+    
+    move = max(space_per_move, key=space_per_move.get)    
     
     print(f"{data['game']['id']} MOVE {data['turn']}: {move} picked from all valid options in {possible_moves}")
     return move
