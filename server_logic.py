@@ -184,7 +184,7 @@ def choose_move(data: dict) -> str:
     # generate the game board with all occupied points
     board = generate_board(data)
     print("Current board:")
-    for line in reversed(board):
+    for line in board:
         print(line)
 
     # get the legal moves from current position and board
