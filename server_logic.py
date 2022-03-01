@@ -194,20 +194,16 @@ def choose_move(data: dict) -> str:
     my_body = data["you"]["body"]  # A list of x/y coordinate dictionaries like [ {"x": 0, "y": 0}, {"x": 1, "y": 0}, {"x": 2, "y": 0} ]
 
     # TODO: uncomment the lines below so you can see what this data looks like in your output!
-    print(f"~~~ Turn: {data['turn']}  Game Mode: {data['game']['ruleset']['name']} ~~~")
+    # print(f"~~~ Turn: {data['turn']}  Game Mode: {data['game']['ruleset']['name']} ~~~")
     # print(f"All board data this turn: {data}")
     # print(f"My Battlesnakes head this turn is: {my_head}")
     # print(f"My Battlesnakes body this turn is: {my_body}")
 
     # generate the game board with all occupied points
     board = generate_board(data)
-    print("Current board:")
-    for line in board:
-        print(line)
 
     # get the legal moves from current position and board
     legal_moves = get_legal_moves(my_head, board)
-    print(f"Possible moves: {legal_moves}")
 
     # initially rate all legal moves
     rated_moves = {}
@@ -222,22 +218,17 @@ def choose_move(data: dict) -> str:
     # rate moves bringing me closer to food by my health
     foods = data["board"]["food"]
     my_health = data["you"]["health"]
-    print(f"my_health: {my_health}")
     food_moves = get_food_moves(my_head, foods, legal_moves)
-    print(f"food_moves: {food_moves}")
     for move in food_moves:
         rated_moves[move] += (150 - my_health)
 
     # rate moves based on space left
     total_space = board_space(board)
-    print(f"total_space: {total_space}")
     space_per_move = get_space_per_move(my_head, board, legal_moves)
-    print(f"space_per_move: {space_per_move}")
     for key, value in space_per_move.items():
         rated_moves[key] += (value/total_space)*100
     
     # select best rated move
-    print(f"rated_moves: {rated_moves}")
     move = max(rated_moves, key=rated_moves.get)
     
     print(f"{data['game']['id']} MOVE {data['turn']}: {move} picked from all valid options in {legal_moves}")
