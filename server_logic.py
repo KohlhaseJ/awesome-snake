@@ -82,16 +82,16 @@ def would_hit_longer_snake(my_head, move, my_length, snakes, board):
         snake_head = snake["head"]
         snake_length = snake["length"]
         if my_length <= snake_length:
-            print(f"new_head: {new_head}, snake_head: {snake_head}, my_length: {my_length}, snake_length: {snake_length}, legal_moves{get_legal_moves(snake_head, board)}")
             for snake_move in get_legal_moves(snake_head, board):
                 new_snake_head = move_head(snake_head, snake_move)
+                print(f"new_head: {new_head}, new_snake_head: {new_snake_head}")
                 if new_head["x"] == new_snake_head["x"] and new_head["y"] == new_snake_head["y"]:
                     return True
     return False
 
-def move_head(my_head, move):
-    x = my_head["x"]
-    y = my_head["y"]
+def move_head(head, move):
+    x = head["x"]
+    y = head["y"]
 
     new_head = {}
     
