@@ -198,7 +198,8 @@ def choose_move(data: dict) -> str:
     # possible_moves = go_centric(my_head, the_board_height, the_board_width, possible_moves)
 
     # head in direction of most free space
-    move = random.choice(possible_moves)
+    move = ""
+    space = 0
     space_per_move = {}
     for tmp_move in possible_moves:
         tmp_space = free_space(my_head, board.copy(), tmp_move)
