@@ -76,17 +76,19 @@ def get_legal_moves(my_head, board):
     
     return legal_moves
 
-def would_hit_longer_snake(my_head, move, my_length, snakes):
+def would_hit_longer_snake(my_head, move, my_length, snakes, board):
+    new_head = move_head(my_head, move)
     for snake in snakes:
         snake_head = snake["head"]
         snake_length = snake["length"]
         if my_length <= snake_length:
-            new_head = move_my_head(my_head, move)
-            if new_head["x"] == snake_head["x"] and new_head["y"] == snake_head["y"]:
-                return True
+            for move in get_legal_moves(snake_head, board):
+                new_snake_head = move_head(snake_head, move)
+                if new_head["x"] == new_snake_head["x"] and new_head["y"] == new_snake_head["y"]:
+                    return True
     return False
 
-def move_my_head(my_head, move):
+def move_head(my_head, move):
     x = my_head["x"]
     y = my_head["y"]
     
@@ -107,7 +109,7 @@ def board_space(board):
 
 
 def free_space(my_head, board, move):
-    new_head = move_my_head(my_head, move)
+    new_head = move_head(my_head, move)
     space = 1 if get_board_value(board, new_head["x"], new_head["y"]) == FREE else 0
     set_board_value(board, new_head["x"], new_head["y"], BLOCKED)
     next_moves = get_legal_moves(new_head, board)
@@ -210,7 +212,7 @@ def choose_move(data: dict) -> str:
     my_length = data["you"]["length"]
     snakes = data["board"]["snakes"]
     for move in legal_moves:
-        if would_hit_longer_snake(my_head, move, my_length, snakes):
+        if would_hit_longer_snake(my_head, move, my_length, snakes, board):
             rated_moves[move] = 0
         else:
             rated_moves[move] = 100
