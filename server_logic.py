@@ -211,9 +211,9 @@ def choose_move(data: dict) -> str:
     snakes = data["board"]["snakes"]
     for move in legal_moves:
         if would_hit_longer_snake(my_head, move, my_length, snakes):
-            rated_moves[move] = -1
-        else:
             rated_moves[move] = 0
+        else:
+            rated_moves[move] = 100
     
     # rate moves bringing me closer to food by my health
     foods = data["board"]["food"]
@@ -227,6 +227,7 @@ def choose_move(data: dict) -> str:
     space_per_move = get_space_per_move(my_head, board, legal_moves)
     for key, value in space_per_move.items():
         rated_moves[key] += (value/total_space)*100
+    print(f"rated_moves: {rated_moves}")
     
     # select best rated move
     move = ""
