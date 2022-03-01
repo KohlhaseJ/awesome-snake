@@ -50,7 +50,7 @@ def is_legal_move(board, x, y):
     return board[y][x] == FREE
 
 def get_legal_moves(my_head, board):
-    legal_moves = POSSIBLE_MOVES
+    legal_moves = POSSIBLE_MOVES.copy()
     x = my_head["x"]
     y = my_head["y"]
 
@@ -80,19 +80,14 @@ def free_space(my_head, board, move):
         new_head = {"x": x+1, "y": y}
     if move == "down":
         new_head = {"x": x, "y": y-1}
-    
-    nx = new_head["x"]
-    ny = new_head["y"]
-    next_moves = POSSIBLE_MOVES
-    next_moves.remove(OPPOSITE_MOVES[move])
 
-    if is_legal_move(board, nx, ny):
-        space = 1
-        for next_move in next_moves:
-            space += free_space(new_head, board, next_move)
-        return space
+    next_moves = get_legal_moves(new_head, board)
+    next_moves.remove(OPPOSITE_MOVES[move])
     
-    return 0
+    space = 1
+    for next_move in next_moves:
+        space += free_space(new_head, board, next_move)
+    return space
 
 
 def point_distance(point1, point2):
