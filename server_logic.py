@@ -1,4 +1,4 @@
-from operator import pos
+from operator import eq, pos
 import math
 
 FREE = 0
@@ -219,17 +219,20 @@ def choose_move(data: dict) -> str:
             rated_moves[move] = 0
         else:
             rated_moves[move] = 100
+    print(f"init_rated_moves: {rated_moves}")
     
     # rate moves bringing me closer to food by my health
     foods = data["board"]["food"]
     my_health = data["you"]["health"]
     food_moves = get_food_moves(my_head, foods, legal_moves)
+    print(f"food_moves: {food_moves}")
     for move in food_moves:
         rated_moves[move] += (150 - my_health)
 
     # rate moves based on space left
     total_space = board_space(board)
     space_per_move = get_space_per_move(my_head, board, legal_moves)
+    print(f"space_per_move: {space_per_move}")
     for key, value in space_per_move.items():
         rated_moves[key] += (value/total_space)*100
     print(f"rated_moves: {rated_moves}")
