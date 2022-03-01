@@ -39,6 +39,16 @@ def generate_board(data):
     
     return board
 
+def deep_copy_board(board):
+    board_height = len(board)
+    board_width = len(board[0])
+    new_board = [[FREE for _ in range(board_width)] for _ in range(board_height)]
+    for y in range(board_height):
+        for x in range(board_width):
+            new_board[y][x] = board[y][x]
+    return new_board
+
+
 def is_legal_move(board, x, y):
     board_width = len(board[0])
     board_height = len(board)
@@ -139,7 +149,7 @@ def get_food_moves(my_head, foods, legal_moves):
 def get_space_per_move(my_head, board, legal_moves):
     space_per_move = {}
     for move in legal_moves:
-        board_copy = board[:]
+        board_copy = deep_copy_board(board)
         space = free_space(my_head, board_copy, move)
         space_per_move[move] = space
     return space_per_move
