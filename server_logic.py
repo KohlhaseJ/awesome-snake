@@ -81,7 +81,6 @@ def would_hit_longer_snake(my_head, move, my_length, snakes, board):
         if my_length <= snake_length:
             for snake_move in get_legal_moves(snake_head, board):
                 new_snake_head = move_head(snake_head, snake_move)
-                print(f"new_head: {new_head}, new_snake_head: {new_snake_head}")
                 if new_head["x"] == new_snake_head["x"] and new_head["y"] == new_snake_head["y"]:
                     return True
     return False
@@ -217,30 +216,26 @@ def choose_move(data: dict) -> str:
             rated_moves[move] = 0
         else:
             rated_moves[move] = 100
-    print(f"init_rated_moves: {rated_moves}")
     
     # rate moves bringing me closer to food by my health
     foods = data["board"]["food"]
     my_health = data["you"]["health"]
     food_moves = get_food_moves(my_head, foods, legal_moves)
-    print(f"food_moves: {food_moves}")
     for move in food_moves:
         rated_moves[move] += (150 - my_health)
 
     # rate moves based on space left
     total_space = board_space(board)
     space_per_move = get_space_per_move(my_head, board, legal_moves)
-    print(f"space_per_move: {space_per_move}")
     for key, value in space_per_move.items():
         rated_moves[key] += (value/total_space)*100
-    print(f"rated_moves: {rated_moves}")
     
     # select best rated move
     move = ""
     if len(rated_moves.keys()) > 0:
         move = max(rated_moves, key=rated_moves.get)
     
-    print(f"{data['game']['id']} MOVE {data['turn']}: {move} picked from all valid options in {legal_moves}")
+    print(f"{data['game']['id']} MOVE {data['turn']}: {move} picked from all valid options in {rated_moves}")
     return move
 
 def try_remove_move(move, possible_moves):
