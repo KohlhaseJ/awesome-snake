@@ -229,7 +229,9 @@ def choose_move(data: dict) -> str:
         rated_moves[key] += (value/total_space)*100
     
     # select best rated move
-    move = max(rated_moves, key=rated_moves.get)
+    move = ""
+    if len(rated_moves.keys) > 0:
+        move = max(rated_moves, key=rated_moves.get)
     
     print(f"{data['game']['id']} MOVE {data['turn']}: {move} picked from all valid options in {legal_moves}")
     return move
