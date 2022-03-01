@@ -205,7 +205,7 @@ def choose_move(data: dict) -> str:
     space_per_move = get_space_per_move(my_head, board, legal_moves)
     print(f"space_per_move: {space_per_move}")
     for key, value in space_per_move.items():
-        rated_moves[key] = (value/total_space)*100
+        rated_moves[key] += (value/total_space)*100
     
     # select best rated move
     print(f"rated_moves: {rated_moves}")
