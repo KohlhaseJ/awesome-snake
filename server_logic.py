@@ -139,7 +139,7 @@ def get_food_moves(my_head, foods, legal_moves):
 def get_space_per_move(my_head, board, legal_moves):
     space_per_move = {}
     for move in legal_moves:
-        board_copy = board.deepcopy()
+        board_copy = board[:]
         space = free_space(my_head, board_copy, move)
         space_per_move[move] = space
     return space_per_move
