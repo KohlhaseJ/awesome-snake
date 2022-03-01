@@ -215,7 +215,7 @@ def choose_move(data: dict) -> str:
         if would_hit_longer_snake(my_head, move, my_length, snakes, board):
             rated_moves[move] = 0
         else:
-            rated_moves[move] = 100
+            rated_moves[move] = 200
     
     # rate moves bringing me closer to food by my health
     foods = data["board"]["food"]
