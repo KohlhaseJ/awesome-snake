@@ -199,13 +199,14 @@ def choose_move(data: dict) -> str:
 
     # head in direction of most free space
     move = random.choice(possible_moves)
-    space = 0
+    space_per_move = {}
     for tmp_move in possible_moves:
         tmp_space = free_space(my_head, board.copy(), tmp_move)
-        print(tmp_space)
+        space_per_move[tmp_move] = tmp_space
         if tmp_space > space:
             space = tmp_space
             move = tmp_move
+    print(space_per_move)
     
     print(f"{data['game']['id']} MOVE {data['turn']}: {move} picked from all valid options in {possible_moves}")
     return move
