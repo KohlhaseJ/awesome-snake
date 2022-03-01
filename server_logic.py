@@ -8,6 +8,15 @@ BLOCKED = 1
 POSSIBLE_MOVES = ["up", "down", "left", "right"]
 OPPOSITE_MOVES = {"up": "down", "down": "up", "left": "right", "right": "left"}
 
+def set_board_value(board, x, y, value):
+    xi = x
+    yi = len(board) - 1 - y
+    board[yi][xi] = value
+
+def get_board_value(board, x, y):
+    xi = x
+    yi = len(board) - 1 - y
+    return board[yi][xi]
 
 def generate_board(data):
     # the board
@@ -37,7 +46,7 @@ def generate_board(data):
         x = point["x"]
         y = point["y"]        
         if not (x < 0 or y < 0 or x >= board_width or y >= board_height):
-            board[y][x] = BLOCKED
+            set_board_value(board, x, y, BLOCKED)
     
     return board
 
@@ -47,7 +56,7 @@ def is_legal_move(board, x, y):
     if x < 0 or y < 0 or x >= board_width or y >= board_height:
         return False
     
-    return board[y][x] == FREE
+    return get_board_value(board, x, y) == FREE
 
 def get_legal_moves(my_head, board):
     legal_moves = POSSIBLE_MOVES.copy()
@@ -81,12 +90,12 @@ def free_space(my_head, board, move):
     if move == "down":
         new_head = {"x": x, "y": y-1}
 
+    set_board_value(board, new_head["x"], new_head["y"], BLOCKED)
     next_moves = get_legal_moves(new_head, board)
-    try_remove_move(OPPOSITE_MOVES[move], next_moves)
 
     space = 1
-    for next_move in next_moves:
-        space += free_space(new_head, board, next_move)
+    if len(next_moves) > 0:
+        space += free_space(new_head, board, next_moves[0])
     return space
 
 
@@ -192,7 +201,7 @@ def choose_move(data: dict) -> str:
     move = random.choice(possible_moves)
     space = 0
     for tmp_move in possible_moves:
-        tmp_space = free_space(my_head, board, move)
+        tmp_space = free_space(my_head, board.copy(), tmp_move)
         print(tmp_space)
         if tmp_space > space:
             space = tmp_space
